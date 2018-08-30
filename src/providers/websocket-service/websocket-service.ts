@@ -24,8 +24,7 @@ export class WebsocketServiceProvider {
       let tempString = location.host.split(":");
       let ip = tempString[0];
       let addr = ip+":7443";
-      // this.ws = new WebSocket('wss://localhost:7443/groupcall'); 
-       this.ws = new WebSocket('wss://ptp.mroads.com:7443/groupcall');
+       this.ws = new WebSocket('wss://localhost:7443/groupcall'); 
       // this.ws = new WebSocket('wss://172.16.3.240:7443/groupcall');
       this.ws.onopen = this.onopen;
       this.ws.onerror = this.onerror;
