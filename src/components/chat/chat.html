@@ -1,0 +1,19 @@
+<!-- Generated template for the ChatComponent component -->
+<!--button ion-button class="icon-wrapper" (click)="toggleChat() "-->
+<div class="chat-component" hideWhen="android,ios">
+  <button class="chatbutton" (click)="toggleChat()" tooltip="Chat" event="hover" positionV="top">
+    <ion-icon md="md-chatboxes" ios="ios-chatboxes"></ion-icon>
+  </button>
+  <div class="boxed" *ngIf="chatParticipant">
+    <div class="messages">
+      <div *ngFor="let messagear of messageArray" class="message">
+        <p>{{messagear.user}}: {{messagear.message}}</p>
+      </div>
+    </div>
+    <div class="enter-message">
+      <input [(ngModel)]="textmsg" (keyup.enter)="chatsys(textmsg)" placeholder="Enter a message">
+      <button class="send" (click)="chatsys(textmsg)">Send</button>
+    </div>
+
+  </div>
+</div>

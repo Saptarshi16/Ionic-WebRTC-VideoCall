@@ -1,0 +1,176 @@
+.body {
+	font: 13px/20px "Lucida Grande", Tahoma, Verdana, sans-serif;
+	color: #404040;
+	background: black;
+}
+page-display {
+
+.main-container {
+
+	.blur-video-container video{
+		object-fit: cover;
+		filter: blur(40px);
+	
+	}
+	
+}
+.chatdiv {
+	position: absolute;
+	z-index: 2;
+	left: 85%;
+}
+.main-video {
+	position: absolute;
+	//left: 0;
+	//top: 0;
+	z-index: 1;
+	height: 100%;
+    width: 100%;
+	vertical-align: baseline;
+	//background: black;
+}
+
+.pip-video {
+	border: 1px solid #ddd;
+	height: 100px;
+	width: 138px;
+	background-color:black;
+	margin-right: 10px;
+	object-fit: fill;
+}
+
+.video-pipcontainter {
+	position: absolute;
+	z-index: 1;
+	bottom: 0;
+	right: 0px;
+	overflow: auto;
+	width: 100%;
+	display: flex;
+	justify-content: flex-end;
+
+
+
+}
+.video-pipcontainter span{
+	color: white;
+	font-weight: bold;
+}
+
+.icon {
+	width: 20px;
+}
+
+.audio-mute {
+	width: 15px;
+}
+
+.video-mute {
+	width: 25px;
+}
+
+.buttons-row {
+	position: absolute;
+	bottom: 150px;
+	z-index: 1;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	left: 0px;
+}
+
+.icon-wrapper {
+	width: 50px;
+	height: 50px;
+	background: grey;
+	border-radius: 25px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 15px;
+	cursor: pointer;
+	background-repeat: no-repeat;
+    background-position: center;
+	background-size: contain;
+	background-size: 100%;
+	background:#db4437;
+	
+}
+// .icon-wrapper:hover {
+// 	background:#db4437;
+// 	//color: rgba(255, 255, 255, 0.904)
+// }
+
+.end-call-wrapper:hover .white-end-call-icon {
+	display: none;	
+}
+
+.end-call-wrapper:hover .red-end-call-icon {
+	display: block;
+	
+	
+}
+.red-end-call-icon {
+	display: none;
+
+}
+.overlay-div {
+	position: absolute;
+}
+.overlay-button-aud {
+	position: absolute;
+	z-index: 2;
+	top: 70px;
+	left: 5px
+	//right: 50%;
+}
+ion-icon {
+	font-size: 30px;
+}
+.overlay-button-vid {
+	position: absolute;
+	z-index: 2;
+	top: 45px;
+	left:5px
+	//right: 50%;
+
+	//bottom: 15%;
+}
+.overlay-button-src {
+	position: absolute;
+	z-index: 2;
+	top: 100%;
+	color:black;
+	height: 30px;
+	width: 30px;
+	border-radius: 15px;
+	background: grey;
+	//right: 50%;
+	//bottom: 30%;
+}
+/*video {
+	object-fit: fill;
+}*/
+
+@media screen and (max-width:768px) {
+	.pip-video {
+		border: 1px solid #ddd;
+		height: 100px;
+		object-fit: fill;
+		background: black;
+	}
+	.video-pipcontainter {
+		justify-content: initial;
+	}
+}
+}
+
+
+
+
+@media screen and (orientation: landscape) {
+	ion-app.md [padding] .scroll-content {
+		padding: 0!important;
+	}
+  }

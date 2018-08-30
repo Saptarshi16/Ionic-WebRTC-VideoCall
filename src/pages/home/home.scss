@@ -1,0 +1,21 @@
+page-home {
+    .body {
+        font: 13px/20px "Lucida Grande", Tahoma, Verdana, sans-serif;
+        display: block;
+        color: #404040;
+        background: #e2eaec;
+    }
+    .box{
+        
+        border:2px ;
+        border-radius: 8px;
+         position:relative;
+         width: 40%;
+         height: 25%;
+         transform: translateX(70%);  
+        //left:35%;
+        //right:30%;
+        //margin-left:-15px;
+    }
+
+}

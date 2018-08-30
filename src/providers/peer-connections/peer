@@ -1,0 +1,185 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { WebsocketServiceProvider } from '../websocket-service/websocket-service'
+import { NgZone } from '@angular/core';
+import { Http, Headers, RequestOptions } from '@angular/http';
+import { Response } from '@angular/http/src/static_response';
+
+/*
+  Generated class for the PeerConnectionsProvider provider.
+
+  See https://angular.io/guide/dependency-injection for more info on providers
+  and Angular DI.
+*/
+@Injectable()
+export class PeerConnectionsProvider {
+
+    name: string;
+    ws: WebsocketServiceProvider;
+    updateZone: any;
+    //router: Router;
+    //route: ActivatedRoute;
+    container: any;
+    isLocal: boolean = false;
+    /*
+    stream will be used to store stream source
+    for local participant it will store local stream
+    for remote participant it will store remote stream.
+    for local participant stream will be set during existing participants call
+    for remote participant stream will be set during onaddstream callback
+    */
+    screenStream: MediaStream;
+    stream: MediaStream;    
+    http: Http
+    servers: any = null;
+    senderPeer: RTCPeerConnection;
+    configuration: any;
+
+
+    constructor(name: string, ws: WebsocketServiceProvider) {
+        this.name = name;
+        this.ws = ws;
+        console.log("Constructor called");
+        // this.configuration=config;
+        console.log("line1");
+    }
+    
+
+    addConfig(config: any) {
+        this.configuration = config;
+    }
+
+    dispose() {
+        console.log('Disposing participant ');
+        if (this.senderPeer != null) {
+            console.log(this.senderPeer);
+            this.senderPeer.onremovestream = this.onremovestream;
+            this.senderPeer.close();
+        }
+    }
+
+    createPeers(stream) {
+        console.log("Create peers entered");
+        console.log(this.configuration);
+        this.senderPeer = new RTCPeerConnection(this.configuration);
+        //localStream.getTracks().forEach(track=>this.senderPeer.addTrack(track,localStream));
+        this.senderPeer.addStream(stream);
+        this.senderPeer.onicecandidate = this.onicecandidate.bind(this);
+        this.senderPeer.onaddstream = this.onaddstream.bind(this);
+        this.senderPeer.oniceconnectionstatechange = this.oniceconnectionstatechange.bind(this);
+        console.log("exit createpeers");
+    }
+
+    //Callback is called when connection is added by remote stream
+    onaddstream(event: any) {
+        console.info("remote stream detected", name, event);
+        if(this.stream) {
+            this.screenStream = event.stream;
+            console.log("Screen share added", event.stream);
+            this.updateZone();
+        } else {
+            this.stream = event.stream;
+            this.updateZone();
+        }
+        //this.updateZone(this);
+    }
+    onremovestream(event: any) {
+        console.log("remove stream removed");
+        if(event.stream === this.stream) {
+            this.stream = undefined;
+        } else {
+            this.screenStream = undefined;
+        }
+    }
+    onicecandidate(event: any) {
+        console.log("onicecandidate ", event);
+        console.log(event);
+        console.info("new candidate generated for sender", this.name, event.candidate);
+        if (event.candidate) {
+            var message = {
+                id: 'iceCandidate',
+                candidate: event.candidate,
+                sender: this.name
+            };
+            this.ws.sendMessage(message);
+        }
+    }
+    oniceconnectionstatechange() {
+        console.info(this.senderPeer.iceConnectionState, this.name);
+    }
+    createAnswer(sdp: any, state: any) {
+        console.log("createanswer---");
+        console.log(this);
+        var that = this;
+        console.log("tempState",state);
+        this.senderPeer.setRemoteDescription(sdp).then(function () {
+            that.senderPeer.createAnswer(function (sdp) {
+                console.log("createanswersdp",sdp);
+                that.senderPeer.setLocalDescription(sdp);
+                /*var msg = {
+                    id: "sdp",
+                    sender: that.name,
+                    sdp: sdp
+                };*/
+                var msg = {
+                    id: "sdp",
+                    sender: that.name,
+                    participantState:state,
+                    sdp: sdp
+                }
+                console.log("createansmsg",msg);
+                that.ws.sendMessage(msg);
+            }, console.error);
+        }, console.error);
+    }
+    generateSdp(state) {
+        console.log(this);
+        console.log("generatesdp",state);
+        var that = this;
+        this.senderPeer.createOffer(function (sdp) {
+            console.log("localsdp",sdp);
+            console.log(state);
+            that.senderPeer.setLocalDescription(sdp);
+            var msg = {
+                id: "sdp",
+                sender: that.name,
+                participantState:state,
+                sdp: sdp
+            };
+            console.log("generate sdp",msg);
+            that.ws.sendMessage(msg);
+        }, console.error);
+    }
+    setSdp(sdp:any, state: any) {
+        console.log("setSDP----",state);
+        sdp.type === 'answer' ? this.senderPeer.setRemoteDescription(sdp) : this.createAnswer(sdp, state);
+
+        //sdp.type === 'answer' ? this.senderPeer.setRemoteDescription(sdp) : this.createAnswer(sdp);
+    }
+    addIceCandidate(candidate: any) {
+        this.senderPeer.addIceCandidate(candidate);
+    }
+
+
+    setLocalStream(stream) {
+        console.log("trying to set local stream");
+        this.stream = stream;
+        this.isLocal = true;
+        console.log("fail/pass set local stream");
+    }
+    addStream(stream) {
+        console.log('add stream', this);
+        console.log(this.senderPeer);
+        //stream.getTracks().forEach(track => this.senderPeer.addTrack(track,stream));
+        //this.senderPeer.addTrack(stream);
+        this.senderPeer.addStream(stream);
+        //stream.getTracks().forEach(track => this.senderPeer.addTrack(track,stream));
+    }
+    removeStream(stream: any) {
+        console.log('remove stream')
+        console.log(this.senderPeer);
+        this.senderPeer.removeStream(stream);
+        //stream.getTracks().forEach(track => this.senderPeer.addTrack(track,stream));
+    }
+
+}

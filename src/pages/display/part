@@ -1,0 +1,84 @@
+import { Injectable } from "@angular/core";
+import { WebsocketServiceProvider } from "../../providers/websocket-service/websocket-service";
+import { Http } from "@angular/http/src/http";
+import { PeerConnectionsProvider } from "../../providers/peer-connections/peer-connections";
+import { NgZone } from "@angular/core/src/zone/ng_zone";
+
+export class Participantm {
+    name: string;
+    ws: WebsocketServiceProvider;
+    http: Http;
+    audioFlag:boolean;
+    videoFlag: boolean;
+    senderPeer: RTCPeerConnection;
+    peerConnect: PeerConnectionsProvider;
+    participantState: Object;
+    constructor(owner: string, name: string, ws: WebsocketServiceProvider,
+        configuration: any, updateZone: any) {
+        this.name = name;
+        this.ws = ws;
+        this.peerConnect = new PeerConnectionsProvider(this.name,this.ws);
+        this.peerConnect.updateZone = updateZone;
+
+        this.peerConnect.addConfig(configuration);
+        this.audioFlag = false;
+        this.videoFlag=false;
+        //this.participantState = {audio:false,video:false,screen:false};
+        this.participantState = {owner: owner, audio:false, video:false, screen:false};
+        /*this.participantState.audio = false;
+        this.participantState.video = false;
+        this.participantState.screen = false;*/
+    }    
+    createPeers(stream) {
+        console.log("Create peers entered participant");
+        this.peerConnect.createPeers(stream);
+    }
+    /*setSdp(sdp: any) {
+        console.log("Set sdp(participant");
+        this.peerConnect.setSdp(sdp);
+    }*/
+    setSdp(message:any, state: any) {
+        console.log("Set sdp participnat ", state);
+        console.log("message", message);
+        this.peerConnect.setSdp(message.sdp, state);
+    }
+    setLocalStream(stream) {
+        console.log("Set local stream participant");
+        this.peerConnect.setLocalStream(stream);
+    }
+    setScreenStream(stream) {
+        console.log("Setting screen stream on new participants");
+        this.peerConnect.screenStream = stream;
+    }
+    dispose() {
+        console.log("dispose participants");
+        this.peerConnect.dispose();
+    }
+    sendAction(state,callback) {
+        callback(state);
+    }
+    /*generateSdp() {
+        console.log("generate sdp participants");
+        this.peerConnect.generateSdp();
+    }*/
+    generateSdp(message) {
+        console.log("generate sdp participants");
+        this.peerConnect.generateSdp(message);
+    }
+    addIceCandidate(candidate: any) {
+        console.log("addicecandidate");
+        this.peerConnect.addIceCandidate(candidate);
+    }
+    getLocalStream() {
+        console.log("Local stream is called");
+        return this.peerConnect.stream;
+    }
+    addStream(stream: MediaStream) {
+        console.log("Stream Added");
+        this.peerConnect.addStream(stream);
+    }
+    getScreenStream() {
+        console.log("Share screen stream");
+        return this.peerConnect.screenStream;
+    }
+}
